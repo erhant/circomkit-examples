@@ -10,7 +10,7 @@ describe("sha256", () => {
   const NUM_BYTES = 36;
 
   // preimage and its byte array
-  const PREIMAGE = randomBytes(NUM_BYTES);
+  const PREIMAGE = Buffer.from("today is a good day, not everyday is");
   const PREIMAGE_BYTES = PREIMAGE.toJSON().data;
 
   // digest and its byte array

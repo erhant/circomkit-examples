@@ -4,6 +4,11 @@
     "template": "Multiplier",
     "params": [3]
   },
+  "sha256_32": {
+    "file": "sha256",
+    "template": "Sha256Bytes",
+    "params": [32]
+  },
   "sudoku_9x9": {
     "file": "sudoku",
     "template": "Sudoku",

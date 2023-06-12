@@ -1,4 +1,4 @@
-# Circomkit Example Circuits
+# Circomkit Examples
 
 In this repository, we are using Circomkit to test some example circuits using Mocha. The circuits and the statements that they prove are as follows:
 
@@ -8,13 +8,85 @@ In this repository, we are using Circomkit to test some example circuits using M
 - **Sudoku**: "I know the solution to some `(n^2)x(n^2)` Sudoku puzzle".
 - **Floating-Point Addition**: "I know two floating-point numbers that make up some number with `e` exponent and `m` mantissa bits." (adapted from [Berkeley ZKP MOOC 2023 - Lab](https://github.com/rdi-berkeley/zkp-mooc-lab)).
 
+## Usage
+
+To use Circomkit CLI with a circuit, let's say for Sudoku 9x9, we follow the steps below:
+
+1. We write a circuit config in `circuits.json` with the desired parameters. In this case, we are working with the 9x9 Sudoku solution circuit, and the board size is calculated by the square of our template parameter so we should give 3. Furthermore, `puzzle` is a public input so we should specify that too.
+
+```json
+{
+  "sudoku_9x9": {
+    "file": "sudoku",
+    "template": "Sudoku",
+    "pubs": ["puzzle"],
+    "params": [3]
+  }
+}
+```
+
+2. Compile the circuit with Circomkit, providing the same circuit name as in `circuits.json`:
+
+```sh
+npx circomkit compile sudoku_9x9 # compile the circuit
+npx circomkit info sudoku_9x9    # print circuit info if you want to
+```
+
+3. Commence circuit-specific setup. Normally, this requires us to download a Phase-1 PTAU file and provide it's path; however, Circomkit can determine the required PTAU and download it automatically when using `bn128` curve, thanks to [Perpetual Powers of Tau](https://github.com/privacy-scaling-explorations/perpetualpowersoftau). In this case, `sudoku_9x9` circuit has 4617 constraints, so Circomkit will download `powersOfTau28_hez_final_13.ptau` (see [here](https://github.com/iden3/snarkjs#7-prepare-phase-2)).
+
+```sh
+npx circomkit setup sha256_32
+```
+
+4. Prepare your input file under `./inputs/sudoku_9x9/defualt.json`.
+
+```json
+{
+  "solution": [
+    [1, 9, 4, 8, 6, 5, 2, 3, 7],
+    [7, 3, 5, 4, 1, 2, 9, 6, 8],
+    [8, 6, 2, 3, 9, 7, 1, 4, 5],
+    [9, 2, 1, 7, 4, 8, 3, 5, 6],
+    [6, 7, 8, 5, 3, 1, 4, 2, 9],
+    [4, 5, 3, 9, 2, 6, 8, 7, 1],
+    [3, 8, 9, 6, 5, 4, 7, 1, 2],
+    [2, 4, 6, 1, 7, 9, 5, 8, 3],
+    [5, 1, 7, 2, 8, 3, 6, 9, 4]
+  ],
+  "puzzle": [
+    [0, 0, 0, 8, 6, 0, 2, 3, 0],
+    [7, 0, 5, 0, 0, 0, 9, 0, 8],
+    [0, 6, 0, 3, 0, 7, 0, 4, 0],
+    [0, 2, 0, 7, 0, 8, 0, 5, 0],
+    [0, 7, 8, 5, 0, 0, 0, 0, 0],
+    [4, 0, 0, 9, 0, 6, 0, 7, 0],
+    [3, 0, 9, 0, 5, 0, 7, 0, 2],
+    [0, 4, 0, 1, 0, 9, 0, 8, 0],
+    [5, 0, 7, 0, 8, 0, 0, 9, 4]
+  ]
+}
+```
+
+5. We are ready to create a proof!
+
+```sh
+npx circomkit prove sudoku_9x9 default
+```
+
+6. We can then verify our proof. You can try and modify the public input at `./build/sudoku_9x9/default/public.json` and see if the proof verifies or not!
+
+```sh
+npx circomkit verify sudoku_9x9 default
+```
+
+## Testing
+
 You can use the following commands to test the circuits:
 
 ```sh
 # test everything
 yarn test:all
 
-# test a circuit
-yarn test "circuit name"
-``
+# test a specific circuit
+yarn test <circuit-name>
 ```
