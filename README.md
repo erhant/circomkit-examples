@@ -35,7 +35,7 @@ npx circomkit info sudoku_9x9    # print circuit info if you want to
 3. Commence circuit-specific setup. Normally, this requires us to download a Phase-1 PTAU file and provide it's path; however, Circomkit can determine the required PTAU and download it automatically when using `bn128` curve, thanks to [Perpetual Powers of Tau](https://github.com/privacy-scaling-explorations/perpetualpowersoftau). In this case, `sudoku_9x9` circuit has 4617 constraints, so Circomkit will download `powersOfTau28_hez_final_13.ptau` (see [here](https://github.com/iden3/snarkjs#7-prepare-phase-2)).
 
 ```sh
-npx circomkit setup sha256_32
+npx circomkit setup sudoku_9x9
 ```
 
 4. Prepare your input file under `./inputs/sudoku_9x9/defualt.json`.
