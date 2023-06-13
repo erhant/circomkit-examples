@@ -28,17 +28,22 @@ To use Circomkit CLI with a circuit, let's say for Sudoku 9x9, we follow the ste
 2. Compile the circuit with Circomkit, providing the same circuit name as in `circuits.json`:
 
 ```sh
-npx circomkit compile sudoku_9x9 # compile the circuit
-npx circomkit info sudoku_9x9    # print circuit info if you want to
+npx circomkit compile sudoku_9x9
+
+# print circuit info if you want to
+npx circomkit info sudoku_9x9
 ```
 
 3. Commence circuit-specific setup. Normally, this requires us to download a Phase-1 PTAU file and provide it's path; however, Circomkit can determine the required PTAU and download it automatically when using `bn128` curve, thanks to [Perpetual Powers of Tau](https://github.com/privacy-scaling-explorations/perpetualpowersoftau). In this case, `sudoku_9x9` circuit has 4617 constraints, so Circomkit will download `powersOfTau28_hez_final_13.ptau` (see [here](https://github.com/iden3/snarkjs#7-prepare-phase-2)).
 
 ```sh
 npx circomkit setup sudoku_9x9
+
+# alternative: provide the PTAU yourself
+npx circomkit setup sudoku_9x9 <path-to-ptau>
 ```
 
-4. Prepare your input file under `./inputs/sudoku_9x9/defualt.json`.
+4. Prepare your input file under `./inputs/sudoku_9x9/default.json`.
 
 ```json
 {
@@ -77,6 +82,18 @@ npx circomkit prove sudoku_9x9 default
 
 ```sh
 npx circomkit verify sudoku_9x9 default
+```
+
+## Configuration
+
+Circomkit checks for `circomkit.json` to override it's default configurations. We could for example change the target version, prime field and the proof system by setting `circomkit.json` to be:
+
+```json
+{
+  "version": "2.1.2",
+  "proofSystem": "plonk",
+  "curve": "bls12381"
+}
 ```
 
 ## Testing
