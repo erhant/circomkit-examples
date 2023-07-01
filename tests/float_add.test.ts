@@ -1,6 +1,5 @@
-import { Circomkit, WasmTester } from "circomkit";
-
-const circomkit = new Circomkit();
+import { WitnessTester } from "circomkit";
+import { circomkit } from "./common";
 
 const expectedConstraints = {
   fp32: 401,
@@ -14,18 +13,21 @@ const expectedConstraints = {
 
 // tests adapted from https://github.com/rdi-berkeley/zkp-mooc-lab
 describe("float_add 32-bit", () => {
-  let circuit: WasmTester<["e", "m"], ["e_out", "m_out"]>;
+  let circuit: WitnessTester<["e", "m"], ["e_out", "m_out"]>;
 
   const k = 8;
   const p = 23;
 
   before(async () => {
-    circuit = await circomkit.WasmTester("fp32", {
+    circuit = await circomkit.WitnessTester("fp32", {
       file: "float_add",
       template: "FloatAdd",
       params: [k, p],
     });
-    await circuit.checkConstraintCount(401);
+  });
+
+  it("should have correct number of constraints", async () => {
+    await circuit.expectConstraintCount(expectedConstraints.fp32);
   });
 
   it("case I test", async () => {
@@ -120,15 +122,18 @@ describe("float_add 32-bit", () => {
 describe("float_add 64-bit", () => {
   const k = 11;
   const p = 52;
-  let circuit: WasmTester<["e", "m"], ["e_out", "m_out"]>;
+  let circuit: WitnessTester<["e", "m"], ["e_out", "m_out"]>;
 
   before(async () => {
-    circuit = await circomkit.WasmTester("fp64", {
+    circuit = await circomkit.WitnessTester("fp64", {
       file: "float_add",
       template: "FloatAdd",
       params: [k, p],
     });
-    await circuit.checkConstraintCount(819);
+  });
+
+  it("should have correct number of constraints", async () => {
+    await circuit.expectConstraintCount(expectedConstraints.fp64);
   });
 
   it("case I test", async () => {
@@ -209,16 +214,19 @@ describe("float_add 64-bit", () => {
 describe("float_add utilities", () => {
   describe("check bit length", () => {
     const b = 23; // bit count
-    let circuit: WasmTester<["in"], ["out"]>;
+    let circuit: WitnessTester<["in"], ["out"]>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`cbl_${b}`, {
+      circuit = await circomkit.WitnessTester(`cbl_${b}`, {
         file: "float_add",
         template: "CheckBitLength",
         params: [b],
         dir: "test/float_add",
       });
-      await circuit.checkConstraintCount(expectedConstraints.checkBitLength(b));
+    });
+
+    it("should have correct number of constraints", async () => {
+      await circuit.expectConstraintCount(expectedConstraints.checkBitLength(b));
     });
 
     it("should give 1 for in ≤ b", async () => {
@@ -232,16 +240,19 @@ describe("float_add utilities", () => {
 
   describe("left shift", () => {
     const shift_bound = 25;
-    let circuit: WasmTester<["x", "shift", "skip_checks"], ["y"]>;
+    let circuit: WitnessTester<["x", "shift", "skip_checks"], ["y"]>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`shl_${shift_bound}`, {
+      circuit = await circomkit.WitnessTester(`shl_${shift_bound}`, {
         file: "float_add",
         template: "LeftShift",
         dir: "test/float_add",
         params: [shift_bound],
       });
-      await circuit.checkConstraintCount(expectedConstraints.leftShift(shift_bound));
+    });
+
+    it("should have correct number of constraints", async () => {
+      await circuit.expectConstraintCount(expectedConstraints.leftShift(shift_bound));
     });
 
     it("should pass test 1 - don't skip checks", async () => {
@@ -286,16 +297,19 @@ describe("float_add utilities", () => {
   describe("right shift", () => {
     const b = 49;
     const shift = 24;
-    let circuit: WasmTester<["x"], ["y"]>;
+    let circuit: WitnessTester<["x"], ["y"]>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`shr_${b}`, {
+      circuit = await circomkit.WitnessTester(`shr_${b}`, {
         file: "float_add",
         template: "RightShift",
         dir: "test/float_add",
         params: [b, shift],
       });
-      await circuit.checkConstraintCount(b);
+    });
+
+    it("should have correct number of constraints", async () => {
+      await circuit.expectConstraintCount(b);
     });
 
     it("should pass - small bitwidth", async () => {
@@ -311,16 +325,19 @@ describe("float_add utilities", () => {
     const k = 8;
     const p = 23;
     const P = 47;
-    let circuit: WasmTester<["e", "m", "skip_checks"], ["e_out", "m_out"]>;
+    let circuit: WitnessTester<["e", "m", "skip_checks"], ["e_out", "m_out"]>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`normalize_${k}_${p}_${P}`, {
+      circuit = await circomkit.WitnessTester(`normalize_${k}_${p}_${P}`, {
         file: "float_add",
         template: "Normalize",
         params: [k, p, P],
         dir: "test/float_add",
       });
-      await circuit.checkConstraintCount(expectedConstraints.normalize(P));
+    });
+
+    it("should have correct number of constraints", async () => {
+      await circuit.expectConstraintCount(expectedConstraints.normalize(P));
     });
 
     it("should pass - don't skip checks", async () => {
@@ -364,16 +381,19 @@ describe("float_add utilities", () => {
 
   describe("msnzb", () => {
     const b = 48;
-    let circuit: WasmTester<["in", "skip_checks"], ["one_hot"]>;
+    let circuit: WitnessTester<["in", "skip_checks"], ["one_hot"]>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`msnzb_${b}`, {
+      circuit = await circomkit.WitnessTester(`msnzb_${b}`, {
         file: "float_add",
         template: "MSNZB",
         dir: "test/float_add",
         params: [b],
       });
-      await circuit.checkConstraintCount(expectedConstraints.msnzb(b));
+    });
+
+    it("should have correct number of constraints", async () => {
+      await circuit.expectConstraintCount(expectedConstraints.msnzb(b));
     });
 
     it("should pass test 1 - don't skip checks", async () => {

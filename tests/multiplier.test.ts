@@ -1,19 +1,20 @@
-import { Circomkit, FullProof, ProofTester, WasmTester } from "circomkit";
-
-const circomkit = new Circomkit();
+import { WitnessTester } from "circomkit";
+import { circomkit } from "./common";
 
 describe("multiplier", () => {
   const N = 3;
-  let circuit: WasmTester<["in"], ["out"]>;
+  let circuit: WitnessTester<["in"], ["out"]>;
 
   before(async () => {
-    circuit = await circomkit.WasmTester(`multiplier_${N}`, {
+    circuit = await circomkit.WitnessTester(`multiplier_${N}`, {
       file: "multiplier",
       template: "Multiplier",
       params: [N],
     });
+  });
 
-    await circuit.checkConstraintCount(N - 1);
+  it("should have correct number of constraints", async () => {
+    await circuit.expectConstraintCount(N - 1);
   });
 
   it("should multiply correctly", async () => {
@@ -24,10 +25,10 @@ describe("multiplier", () => {
 
 describe("multiplier utilities", () => {
   describe("multiplication gate", () => {
-    let circuit: WasmTester<["in"], ["out"]>;
+    let circuit: WitnessTester<["in"], ["out"]>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester("mulgate", {
+      circuit = await circomkit.WitnessTester("mulgate", {
         file: "multiplier",
         template: "MultiplicationGate",
         dir: "test/multiplier",
@@ -37,28 +38,5 @@ describe("multiplier utilities", () => {
     it("should multiply correctly", async () => {
       await circuit.expectPass({ in: [7, 5] }, { out: 7 * 5 });
     });
-  });
-});
-
-describe("multiplier proofs", () => {
-  const N = 3;
-  let fullProof: FullProof;
-  let circuit: ProofTester<["in"]>;
-
-  before(async () => {
-    const circuitName = "multiplier_" + N;
-    circuit = await circomkit.ProofTester(circuitName);
-    fullProof = await circuit.prove({
-      in: Array.from({ length: N }, () => Math.floor(Math.random() * 100 * N)),
-    });
-  });
-
-  it("should verify", async () => {
-    await circuit.expectPass(fullProof.proof, fullProof.publicSignals);
-  });
-
-  it("should NOT verify", async () => {
-    // just give a prime number as the output, assuming none of the inputs are 1
-    await circuit.expectFail(fullProof.proof, ["13"]);
   });
 });

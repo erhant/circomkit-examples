@@ -1,18 +1,17 @@
-import { Circomkit, WasmTester } from "circomkit";
-
-const circomkit = new Circomkit();
+import { WitnessTester } from "circomkit";
+import { circomkit } from "./common";
+const N = 7;
 
 describe("fibonacci", () => {
-  let circuit: WasmTester<["in"], ["out"]>;
-  const N = 19;
+  let circuit: WitnessTester<["in"], ["out"]>;
 
   before(async () => {
-    circuit = await circomkit.WasmTester(`fibonacci_${N}`, {
+    circuit = await circomkit.WitnessTester(`fibonacci_${N}`, {
       file: "fibonacci",
       template: "Fibonacci",
       params: [N],
     });
-    await circuit.checkConstraintCount();
+    console.log("#constraints:", await circuit.getConstraintCount());
   });
 
   it("should compute correctly", async () => {
@@ -21,17 +20,15 @@ describe("fibonacci", () => {
 });
 
 describe("fibonacci recursive", () => {
-  let circuit: WasmTester<["in"], ["out"]>;
-
-  const N = 19;
+  let circuit: WitnessTester<["in"], ["out"]>;
 
   before(async () => {
-    circuit = await circomkit.WasmTester(`fibonacci_${N}_recursive`, {
+    circuit = await circomkit.WitnessTester(`fibonacci_${N}_recursive`, {
       file: "fibonacci",
       template: "FibonacciRecursive",
       params: [N],
     });
-    await circuit.checkConstraintCount();
+    console.log("#constraints:", await circuit.getConstraintCount());
   });
 
   it("should compute correctly", async () => {

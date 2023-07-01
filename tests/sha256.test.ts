@@ -1,10 +1,9 @@
-import { Circomkit, WasmTester } from "circomkit";
-import { randomBytes, createHash } from "crypto";
-
-const circomkit = new Circomkit();
+import { WitnessTester } from "circomkit";
+import { createHash } from "crypto";
+import { circomkit } from "./common";
 
 describe("sha256", () => {
-  let circuit: WasmTester<["in"], ["out"]>;
+  let circuit: WitnessTester<["in"], ["out"]>;
 
   // number of bytes for the sha256 input
   const NUM_BYTES = 36;
@@ -26,12 +25,11 @@ describe("sha256", () => {
   };
 
   before(async () => {
-    circuit = await circomkit.WasmTester(`sha256_${NUM_BYTES}`, {
+    circuit = await circomkit.WitnessTester(`sha256_${NUM_BYTES}`, {
       file: "sha256",
       template: "Sha256Bytes",
       params: [NUM_BYTES],
     });
-    await circuit.checkConstraintCount();
   });
 
   it("should compute hash correctly", async () => {

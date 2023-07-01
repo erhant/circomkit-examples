@@ -1,11 +1,10 @@
 {
   "author": "erhant",
   "scripts": {
-    "test:all": "npx mocha",
-    "test": "npx mocha --grep"
+    "test": "npx mocha"
   },
   "dependencies": {
-    "circomkit": "^0.0.9",
+    "circomkit": "^0.0.12",
     "circomlib": "^2.0.5"
   },
   "devDependencies": {

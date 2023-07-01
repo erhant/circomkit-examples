@@ -1,10 +1,8 @@
-import { WasmTester, CircuitSignals, Circomkit } from "circomkit";
+import { WitnessTester, CircuitSignals } from "circomkit";
+import { circomkit } from "./common";
 
-const circomkit = new Circomkit();
-
-type BoardSizes = 4 | 9;
-
-const INPUTS: { [N in BoardSizes]: CircuitSignals<["solution", "puzzle"]> } = {
+const BOARD_SIZES = [4, 9] as const;
+const INPUTS: { [N in (typeof BOARD_SIZES)[number]]: CircuitSignals<["solution", "puzzle"]> } = {
   9: {
     solution: [
       [1, 9, 4, 8, 6, 5, 2, 3, 7],
@@ -45,19 +43,18 @@ const INPUTS: { [N in BoardSizes]: CircuitSignals<["solution", "puzzle"]> } = {
   },
 };
 
-([4, 9] as BoardSizes[]).map((N) =>
+BOARD_SIZES.map((N) =>
   describe(`sudoku (${N} by ${N})`, () => {
     const INPUT = INPUTS[N];
-    let circuit: WasmTester<["solution", "puzzle"]>;
+    let circuit: WitnessTester<["solution", "puzzle"]>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`sudoku_${N}x${N}`, {
+      circuit = await circomkit.WitnessTester(`sudoku_${N}x${N}`, {
         file: "sudoku",
         template: "Sudoku",
         pubs: ["puzzle"],
         params: [Math.sqrt(N)],
       });
-      await circuit.checkConstraintCount();
     });
 
     it("should compute correctly", async () => {
@@ -100,10 +97,10 @@ describe("sudoku utilities", () => {
   describe("assert bit length", () => {
     const b = 3; // bit count
 
-    let circuit: WasmTester<["in"], []>;
+    let circuit: WitnessTester<["in"], []>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`bitlen_${b}`, {
+      circuit = await circomkit.WitnessTester(`bitlen_${b}`, {
         file: "sudoku",
         template: "AssertBitLength",
         dir: "test/sudoku",
@@ -129,11 +126,10 @@ describe("sudoku utilities", () => {
 
   describe("distinct", () => {
     const n = 3;
-
-    let circuit: WasmTester<["in"], []>;
+    let circuit: WitnessTester<["in"], []>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`distinct_${n}`, {
+      circuit = await circomkit.WitnessTester(`distinct_${n}`, {
         file: "sudoku",
         template: "Distinct",
         dir: "test/sudoku",
@@ -164,10 +160,10 @@ describe("sudoku utilities", () => {
   describe("in range", () => {
     const MIN = 1;
     const MAX = 9;
-    let circuit: WasmTester<["in"]>;
+    let circuit: WitnessTester<["in"]>;
 
     before(async () => {
-      circuit = await circomkit.WasmTester(`inRange_${MIN}_${MAX}`, {
+      circuit = await circomkit.WitnessTester(`inRange_${MIN}_${MAX}`, {
         file: "sudoku",
         template: "InRange",
         dir: "test/sudoku",

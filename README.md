@@ -1,6 +1,6 @@
 # Circomkit Examples
 
-In this repository, we are using Circomkit to test some example circuits using Mocha. The circuits and the statements that they prove are as follows:
+In this repository, we are using [Circomkit](https://github.com/erhant/circomkit) to test some example circuits using Mocha. The circuits and the statements that they prove are as follows:
 
 - **Multiplier**: "I know `n` factors that make up some number".
 - **Fibonacci**: "I know the `n`'th Fibonacci number".
@@ -102,8 +102,8 @@ You can use the following commands to test the circuits:
 
 ```sh
 # test everything
-yarn test:all
+yarn test
 
 # test a specific circuit
-yarn test <circuit-name>
+yarn test -g <circuit-name>
 ```
