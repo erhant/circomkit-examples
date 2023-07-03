@@ -91,8 +91,8 @@ Circomkit checks for `circomkit.json` to override it's default configurations. W
 ```json
 {
   "version": "2.1.2",
-  "proofSystem": "plonk",
-  "curve": "bls12381"
+  "protocol": "plonk",
+  "prime": "bls12381"
 }
 ```
 
