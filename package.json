@@ -1,5 +1,5 @@
 {
-  "author": "erhant",
+  "description": "Circomkit examples",
   "scripts": {
     "start": "npx ts-node ./src/index.ts",
     "test": "npx mocha"
