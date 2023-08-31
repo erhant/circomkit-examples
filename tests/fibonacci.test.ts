@@ -1,38 +1,38 @@
 import { WitnessTester } from "circomkit";
 import { circomkit } from "./common";
-const N = 7;
 
 describe("fibonacci", () => {
+  const N = 7;
   let circuit: WitnessTester<["in"], ["out"]>;
 
-  before(async () => {
-    circuit = await circomkit.WitnessTester(`fibonacci_${N}`, {
-      file: "fibonacci",
-      template: "Fibonacci",
-      params: [N],
+  describe("vanilla", () => {
+    before(async () => {
+      circuit = await circomkit.WitnessTester(`fibonacci_${N}`, {
+        file: "fibonacci",
+        template: "Fibonacci",
+        params: [N],
+      });
+      console.log("#constraints:", await circuit.getConstraintCount());
     });
-    console.log("#constraints:", await circuit.getConstraintCount());
-  });
 
-  it("should compute correctly", async () => {
-    await circuit.expectPass({ in: [1, 1] }, { out: fibonacci([1, 1], N) });
-  });
-});
-
-describe("fibonacci recursive", () => {
-  let circuit: WitnessTester<["in"], ["out"]>;
-
-  before(async () => {
-    circuit = await circomkit.WitnessTester(`fibonacci_${N}_recursive`, {
-      file: "fibonacci",
-      template: "FibonacciRecursive",
-      params: [N],
+    it("should compute correctly", async () => {
+      await circuit.expectPass({ in: [1, 1] }, { out: fibonacci([1, 1], N) });
     });
-    console.log("#constraints:", await circuit.getConstraintCount());
   });
 
-  it("should compute correctly", async () => {
-    await circuit.expectPass({ in: [1, 1] }, { out: fibonacci([1, 1], N) });
+  describe("recursive", () => {
+    before(async () => {
+      circuit = await circomkit.WitnessTester(`fibonacci_${N}_recursive`, {
+        file: "fibonacci",
+        template: "FibonacciRecursive",
+        params: [N],
+      });
+      console.log("#constraints:", await circuit.getConstraintCount());
+    });
+
+    it("should compute correctly", async () => {
+      await circuit.expectPass({ in: [1, 1] }, { out: fibonacci([1, 1], N) });
+    });
   });
 });
 

@@ -8,7 +8,7 @@ In this repository, we are using [Circomkit](https://github.com/erhant/circomkit
 - **Sudoku**: "I know the solution to some `(n^2)x(n^2)` Sudoku puzzle".
 - **Floating-Point Addition**: "I know two floating-point numbers that make up some number with `e` exponent and `m` mantissa bits." (adapted from [Berkeley ZKP MOOC 2023 - Lab](https://github.com/rdi-berkeley/zkp-mooc-lab)).
 
-## Usage
+## CLI Usage
 
 To use Circomkit CLI with a circuit, let's say for Sudoku 9x9, we follow the steps below:
 
@@ -82,6 +82,35 @@ npx circomkit prove sudoku_9x9 default
 
 ```sh
 npx circomkit verify sudoku_9x9 default
+```
+
+## In-Code Usage
+
+If you would like to use Circomkit within the code itself, rather than the CLI, you can see the example at `src/index.ts`. You can `yarn start` to see it in action.
+
+```ts
+// create circomkit
+const circomkit = new Circomkit({
+  protocol: "groth16",
+});
+
+// artifacts output at `build/multiplier_3` directory
+await circomkit.compile("multiplier_3", {
+  file: "multiplier",
+  template: "Multiplier",
+  params: [3],
+});
+
+// proof & public signals at `build/multiplier_3/my_input` directory
+await circomkit.prove("multiplier_3", "my_input", { in: [3, 5, 7] });
+
+// verify with proof & public signals at `build/multiplier_3/my_input`
+const ok = await circomkit.verify("multiplier_3", "my_input");
+if (ok) {
+  circomkit.log("Proof verified!", "success");
+} else {
+  circomkit.log("Verification failed.", "error");
+}
 ```
 
 ## Configuration

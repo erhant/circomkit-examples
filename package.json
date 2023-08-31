@@ -1,10 +1,11 @@
 {
   "author": "erhant",
   "scripts": {
+    "start": "npx ts-node ./src/index.ts",
     "test": "npx mocha"
   },
   "dependencies": {
-    "circomkit": "^0.0.14",
+    "circomkit": "^0.0.18",
     "circomlib": "^2.0.5"
   },
   "devDependencies": {
